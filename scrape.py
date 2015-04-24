@@ -5,6 +5,7 @@ import requests
 import subprocess
 import sys
 import tabulate
+import blessings
 
 
 class OutColors:
