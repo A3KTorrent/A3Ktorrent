@@ -4,17 +4,23 @@
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkAboutDialog" id="aboutdialog1">
     <property name="can_focus">False</property>
+    <property name="window_position">center</property>
+    <property name="icon_name">A3K</property>
     <property name="type_hint">dialog</property>
     <property name="program_name">A3K TORRENT CLIENT</property>
-    <property name="logo_icon_name">computer</property>
+    <property name="version">1.0</property>
+    <property name="comments" translatable="yes">Implements Bittorrent Protocol.</property>
+    <property name="website">https://github.com/A3KTorrent/A3Ktorrent</property>
+    <property name="website_label" translatable="yes">A3K@GITHUB</property>
+    <property name="logo_icon_name">utilities-system-monitor</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="aboutdialog-vbox1">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="aboutdialog-action_area1">
             <property name="can_focus">False</property>
+            <property name="margin_right">147</property>
             <property name="layout_style">end</property>
           </object>
           <packing>
@@ -33,6 +39,7 @@
               <object class="GtkLabel" id="label3">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="ypad">4</property>
                 <property name="label" translatable="yes">DEVELOPED BY:-</property>
                 <attributes>
                   <attribute name="font-desc" value="Courier 10 Pitch Bold Italic 15"/>
@@ -48,12 +55,13 @@
             </child>
             <child>
               <object class="GtkLabel" id="label4">
+                <property name="width_request">-1</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Kritesh Semwal
 Aman Dhapola
-Abhishek Singh
-Akshay Dwivedi
+ 
+
 </property>
                 <attributes>
                   <attribute name="font-desc" value="Century Schoolbook L Italic 10"/>
@@ -332,11 +340,15 @@ Akshay Dwivedi
                 <child>
                   <object class="GtkButton" id="search">
                     <property name="label" translatable="yes">SEARCH</property>
+                    <property name="width_request">80</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="margin_right">7</property>
+                    <property name="margin_top">8</property>
+                    <property name="margin_bottom">9</property>
                     <property name="xalign">0.50999999046325684</property>
-                    <property name="yalign">0.49000000953674316</property>
+                    <property name="yalign">0.44999998807907104</property>
                     <signal name="clicked" handler="search_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -348,8 +360,14 @@ Akshay Dwivedi
                 </child>
                 <child>
                   <object class="GtkEntry" id="search_field">
+                    <property name="width_request">317</property>
+                    <property name="height_request">-1</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="margin_left">8</property>
+                    <property name="margin_right">11</property>
+                    <property name="margin_top">7</property>
+                    <property name="margin_bottom">12</property>
                     <property name="xalign">0.019999999552965164</property>
                   </object>
                   <packing>
@@ -371,6 +389,7 @@ Akshay Dwivedi
               <object class="GtkImage" id="image2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="margin_left">6</property>
                 <property name="stock">gtk-find</property>
               </object>
               <packing>
@@ -395,6 +414,9 @@ Akshay Dwivedi
               <object class="GtkFileChooserButton" id="filechooserbutton1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="margin_right">7</property>
+                <property name="margin_top">11</property>
+                <property name="margin_bottom">7</property>
                 <signal name="file-set" handler="on_filechooserbutton1_file_set" swapped="no"/>
               </object>
               <packing>
@@ -408,7 +430,15 @@ Akshay Dwivedi
               <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">CHOOSE A TORRENT FILE TO START DOWNLOAD:</property>
+                <property name="margin_left">4</property>
+                <property name="margin_right">19</property>
+                <property name="margin_top">3</property>
+                <property name="margin_bottom">7</property>
+                <property name="xalign">0.41999998688697815</property>
+                <property name="yalign">1</property>
+                <property name="ypad">10</property>
+                <property name="label" translatable="yes">CHOOSE A TORRENT FILE  TO START DOWNLOAD :</property>
+                <property name="angle">0.01</property>
                 <attributes>
                   <attribute name="font-desc" value="Droid Sans Fallback Bold Italic 10"/>
                 </attributes>
@@ -431,6 +461,10 @@ Akshay Dwivedi
           <object class="GtkProgressBar" id="progressbar1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_left">4</property>
+            <property name="margin_right">7</property>
+            <property name="margin_top">12</property>
+            <property name="margin_bottom">19</property>
             <property name="show_text">True</property>
           </object>
           <packing>
@@ -449,6 +483,9 @@ Akshay Dwivedi
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="margin_left">127</property>
+                <property name="margin_right">15</property>
+                <property name="margin_bottom">13</property>
                 <property name="xalign">0.44999998807907104</property>
                 <property name="image_position">right</property>
                 <signal name="clicked" handler="onDownloadButtonPressed" swapped="no"/>
@@ -466,6 +503,7 @@ Akshay Dwivedi
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="margin_bottom">13</property>
                 <signal name="clicked" handler="onDeleteWindow" swapped="no"/>
               </object>
               <packing>
