@@ -5,6 +5,7 @@ import requests
 import subprocess
 import sys
 import tabulate
+import blessings
 
 
 class OutColors:
@@ -27,7 +28,7 @@ def select_torrent():
 
 def download_torrent(url):
     fname = os.getcwd() + '/' + url.split('title=')[-1] + '.torrent'
-    # http://stackoverflow.com/a/14114741/1302018
+   
     try:
         r = requests.get(url, stream=True)
         with open(fname, 'wb') as f:
@@ -61,13 +62,7 @@ def aksearch():
     else:
         soup = BeautifulSoup(cont.content)
 
-        # to use by age, seeders, and leechers
-        # sample:
-        # 700.46 MB
-        # 5
-        # 2 years
-        # 1852
-        # 130
+       
         al = [s.get_text() for s in soup.find_all('td', {'class':'center'})]
 
         href = [a.get('href') for a in soup.find_all('a', {'title':'Download torrent file'})]
