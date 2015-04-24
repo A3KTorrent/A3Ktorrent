@@ -47,7 +47,7 @@ class UI(object):
         self.aboutdialog = self.builder.get_object("aboutdialog1")
         self.label = self.builder.get_object("label1")
         self.search_field = self.builder.get_object("search_field")
-        self.popup_menu = self.builder.get_object("menu5")
+        #self.popup_menu = self.builder.get_object("menu5")
     
     def connect(self,handlers):
         self.builder.connect_signals(handlers)
@@ -55,7 +55,15 @@ class UI(object):
 
     def search(self,button):
         print 'search clicked'
-        self.popup_menu.popup(None, None, None, None, None, 0,0)
+        print 'search clicked'
+        self.popup_menu=Gtk.Menu()
+        i1 = Gtk.MenuItem("Leechers seeders size")
+        self.popup_menu.append(i1)
+        i2 = Gtk.MenuItem("Item 2")
+        self.popup_menu.append(i2)
+        self.popup_menu.show_all()
+        self.popup_menu.popup(None, None, None, None, 0, Gtk.get_current_event_time())
+        #self.popup_menu.popup(None, None, None, None, None, 0,0)
 #self.popup_for_device(None, parent_menu_shell, parent_menu_item, func, data, button, activate_time)
 
         s=self.search_field.get_text()
