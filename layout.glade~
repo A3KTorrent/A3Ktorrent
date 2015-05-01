@@ -493,7 +493,7 @@ Aman Dhapola
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="dow_speed">
+              <object class="GtkLabel" id="label5">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">0 Kbps</property>

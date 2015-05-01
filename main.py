@@ -26,7 +26,7 @@ import thread
 import getpass #for username
 import multiprocessing
 import scrape   
-sys.path.append(path.abspath("scraping"))
+#sys.path.append(path.abspath("scraping"))
 import scrape_test
 
 #from twisted.internet import gtk3reactor
@@ -47,6 +47,7 @@ class UI(object):
         self.aboutdialog = self.builder.get_object("aboutdialog1")
         self.label = self.builder.get_object("label1")
         self.search_field = self.builder.get_object("search_field")
+        self.dow_label = self.builder.get_object("dow_speed")
         #self.popup_menu = self.builder.get_object("menu5")
     
     def connect(self,handlers):
@@ -101,8 +102,10 @@ class UI(object):
             
 
     def start_download(self):
+        # change this for changing writing directory
         username=getpass.getuser()
         writing_dir='/home/'+username+'/Downloads/a3k'
+        ###############################################
         print writing_dir
         torrent_list=[]
         torrent_list.append(self.filename)
@@ -127,11 +130,12 @@ class UI(object):
         reactor.run()
 
 
-    def set_progressbar(self,percentage):
+    def set_progressbar(self,percentage,download_speed):
         #print percentage
         #Gtk.main()
         print percentage
         self.progressbar.set_fraction(percentage)
+        self.dow_label.set_text(str(download_speed))
         if percentage >= 1.0:
             #gtk_label_set_text(self.label,"TORRENT FILE 50% DOWNLOADED")
             self.label.set_text("TORRENT FILE 100% DOWNLOADED")
@@ -424,8 +428,8 @@ class ActiveTorrent(object):
     def check_hash(self, piece, piece_num):            #check piece hash when piece is fuly downloaded
         #print 'piece ' + str(piece_num) + ' is full!'
         
-        self.time=time()-self.start_time
-        self.pieces+=1
+        self.time=time()-self.start_time #toal time
+        self.pieces+=1 #it holds no. of pieces downloaded
         #print self.pieces
         #print 'PACKET SIZE:',self.torrent_info.piece_length
         #print "DOWNLOAD SPEED:",
@@ -435,7 +439,7 @@ class ActiveTorrent(object):
         percentage=float(self.pieces)/float(self.file_downloading.number_pieces)
         
         #self.ui.set_progressbar(percentage)
-        GObject.idle_add(self.ui.set_progressbar,percentage) 
+        GObject.idle_add(self.ui.set_progressbar,percentage,downloaded) 
         #thread-safe# to call gtk methods from diff. threads
         
         #update_progress(percentage,100)
