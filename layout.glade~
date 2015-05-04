@@ -167,10 +167,6 @@ Aman Dhapola
     <property name="visible">True</property>
     <property name="can_focus">False</property>
   </object>
-  <object class="GtkMenu" id="menu6">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-  </object>
   <object class="GtkWindow" id="window1">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">A3K TORRENT CLIENT</property>

@@ -2,7 +2,7 @@
 from os import path, mkdir, remove, rename
 from bencode import *
 from ConfigParser import ConfigParser
-from time import time
+from time import *
 from bitstring import BitArray
 from hashlib import sha1
 from struct import pack, unpack
@@ -22,11 +22,13 @@ from blessings import Terminal
 term = Terminal()
 
 from gi.repository import Gtk, GObject
+from gi.repository import Gio
+
 import thread
 import getpass #for username
-import multiprocessing
+from multiprocessing.pool import ThreadPool
 import scrape   
-sys.path.append(path.abspath("scraping"))
+#sys.path.append(path.abspath("scraping"))
 import scrape_test
 
 #from twisted.internet import gtk3reactor
@@ -47,7 +49,8 @@ class UI(object):
         self.aboutdialog = self.builder.get_object("aboutdialog1")
         self.label = self.builder.get_object("label1")
         self.search_field = self.builder.get_object("search_field")
-        self.popup_menu = self.builder.get_object("menu5")
+        self.dow_label = self.builder.get_object("dow_speed")
+        #self.popup_menu = self.builder.get_object("menu5")
     
     def connect(self,handlers):
         self.builder.connect_signals(handlers)
@@ -55,11 +58,57 @@ class UI(object):
 
     def search(self,button):
         print 'search clicked'
-        self.popup_menu.popup(None, None, None, None, None, 0,0)
-#self.popup_for_device(None, parent_menu_shell, parent_menu_item, func, data, button, activate_time)
+        self.popup_menu=Gtk.Menu()
+        # i1 = Gtk.MenuItem("Leechers seeders size")
+        # self.popup_menu.append(i1)
+        # i2 = Gtk.MenuItem("Item 2")
+        # self.popup_menu.append(i2)
+        # self.popup_menu.show_all()
+        # self.popup_menu.popup(None, None, None, None, 0, Gtk.get_current_event_time())
+
+        #self.popup_menu.popup(None, None, None, None, None, 0,0)
+        #self.popup_for_device(None, parent_menu_shell, parent_menu_item, func, data, button, activate_time)
 
         s=self.search_field.get_text()
-        thread.start_new_thread(scrape_test.main,(s,))
+        if s:
+            #thread.start_new_thread(scrape_test.main,(s,))
+            pool = ThreadPool(processes=1)
+            async_result = pool.apply_async(scrape_test.main, (s,)) # tuple of args for foo
+            # do some other stuff in the main process
+            self.href, title, size, seeders, leechers= async_result.get() 
+            for i in range(len(self.href)):
+                #print str(i+1)+'. '+title[i]+' '+size[i]+' '+seeders[i]+' '+leechers[i]
+                i1 = Gtk.MenuItem(str(i+1)+'. '+title[i]+' '+size[i]+' '+seeders[i]+' '+leechers[i])
+                i1.connect("activate",self.item_activated,i)
+                self.popup_menu.append(i1)
+                #print ' '
+            self.popup_menu.show_all()
+            self.popup_menu.popup(None, None, None, None, 0, Gtk.get_current_event_time())
+            #self.popup_menu.connect('move-scroll',self.popup_clicked)
+            #sleep(5)
+
+            # MenuItemSelected = self.popup_menu.get_active() #return selected MenuItem
+
+            # label = MenuItemSelected.get_label()
+            # index = self.popup_menu.get_property("active")
+            # print label
+            # print index
+            #self.popup_menu.get
+
+        else:
+            print 'EMPTY'
+            self.label.set_text("Search field is empty")
+            #self.dialog=self.builder.get_object('dialog1')
+            v=self.dialog.run()
+            if v==1:
+                self.dialog.hide()
+    def item_activated(self,wdg,i):
+        print 'ITEM ACTIVATED:'+str(i)
+        scrape_test.download_torrent(self.href[i])
+
+
+    def popup_clicked(self):
+        print 'popup clicked'
 
     def download(self,button): #when download button is pressed!
         #self.progressbar.set_fraction(0.7)
@@ -70,6 +119,7 @@ class UI(object):
         if self.filename == 'path' or a[len(a)-1]!='torrent':
             print 'PATH'
             print 'PLEASE ENTER A TORRENT FILE'
+            self.label.set_text("Please Select a Torrent File")
             response=self.dialog.run()
             #dialog.show_all()
             print response
@@ -93,8 +143,10 @@ class UI(object):
             
 
     def start_download(self):
+        # change this for changing writing directory
         username=getpass.getuser()
         writing_dir='/home/'+username+'/Downloads/a3k'
+        ###############################################
         print writing_dir
         torrent_list=[]
         torrent_list.append(self.filename)
@@ -119,15 +171,17 @@ class UI(object):
         reactor.run()
 
 
-    def set_progressbar(self,percentage):
+    def set_progressbar(self,percentage,download_speed):
         #print percentage
         #Gtk.main()
         print percentage
         self.progressbar.set_fraction(percentage)
+        download_speed = round(download_speed,2)
+        self.dow_label.set_text(str(download_speed)+'Kbps')
         if percentage >= 1.0:
             #gtk_label_set_text(self.label,"TORRENT FILE 50% DOWNLOADED")
             self.label.set_text("TORRENT FILE 100% DOWNLOADED")
-            self.dialog=self.builder.get_object('dialog1')
+            #self.dialog=self.builder.get_object('dialog1')
             v=self.dialog.run()
             if v==1:
                 self.dialog.destroy()
@@ -140,6 +194,7 @@ class UI(object):
 
 class ActiveTorrent(object):
     def __init__(self,ui, torrent_file, writing_dir):
+        self.start_time=time()                 #for download speed
         self.ui=ui
         self.torrent_info = self.get_torrent(torrent_file)
         self.peers = self.get_peers()
@@ -155,7 +210,6 @@ class ActiveTorrent(object):
         self.blocks_per_full_piece = self.torrent_info.piece_length / constants.REQUEST_LENGTH 
         self.setup_temp_file()
         self.done = False
-        self.start_time=time()                 #for download speed
 
     def bitarray_of_block_number(self):
         block_number = 0
@@ -416,18 +470,19 @@ class ActiveTorrent(object):
     def check_hash(self, piece, piece_num):            #check piece hash when piece is fuly downloaded
         #print 'piece ' + str(piece_num) + ' is full!'
         
-        self.time=time()-self.start_time
-        self.pieces+=1
-        #print self.pieces
-        #print 'PACKET SIZE:',self.torrent_info.piece_length
+        self.time=time()-self.start_time #toal time
+        print 'TIME:'+str(self.time)
+        self.pieces+=1 #it holds no. of pieces downloaded
+        print 'no. of packets:'+str(self.pieces)
+        print 'PACKET SIZE:',self.torrent_info.piece_length
         #print "DOWNLOAD SPEED:",
-        downloaded=(float(self.torrent_info.piece_length)*.008*self.pieces)/(float(self.time))
+        download_speed=(float(self.torrent_info.piece_length)*.008*self.pieces)/(float(self.time))
         #,'Kbps'
         #print 'total pieces',self.file_downloading.number_pieces
         percentage=float(self.pieces)/float(self.file_downloading.number_pieces)
         
         #self.ui.set_progressbar(percentage)
-        GObject.idle_add(self.ui.set_progressbar,percentage) 
+        GObject.idle_add(self.ui.set_progressbar,percentage,download_speed) 
         #thread-safe# to call gtk methods from diff. threads
         
         #update_progress(percentage,100)
