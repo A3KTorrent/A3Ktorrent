@@ -156,7 +156,7 @@ Aman Dhapola
       </object>
     </child>
     <action-widgets>
-      <action-widget response="-3">button1</action-widget>
+      <action-widget response="1">button1</action-widget>
     </action-widgets>
   </object>
   <object class="GtkMenu" id="menu4">
@@ -493,7 +493,7 @@ Aman Dhapola
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label5">
+              <object class="GtkLabel" id="dow_speed">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">0 Kbps</property>

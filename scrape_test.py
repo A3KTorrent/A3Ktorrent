@@ -31,7 +31,9 @@ def main(s):
 	age = al[2::5]      #a[start:end:step]
 	seeders = al[3::5]  
 	leechers = al[4::5]	
-	print 'NUMBER TITLE SIZE SEEDERS LEECHERS'
+	#print 'NUMBER TITLE SIZE SEEDERS LEECHERS'
+	return href, title, size, seeders, leechers
+
 	for i in range(len(href)):
 		print str(i+1)+' '+title[i]+' '+size[i]+' '+seeders[i]+' '+leechers[i]
 		print ' '

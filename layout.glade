@@ -156,7 +156,7 @@ Aman Dhapola
       </object>
     </child>
     <action-widgets>
-      <action-widget response="-3">button1</action-widget>
+      <action-widget response="1">button1</action-widget>
     </action-widgets>
   </object>
   <object class="GtkMenu" id="menu4">
@@ -164,6 +164,10 @@ Aman Dhapola
     <property name="can_focus">False</property>
   </object>
   <object class="GtkMenu" id="menu5">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+  </object>
+  <object class="GtkMenu" id="menu6">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
   </object>
