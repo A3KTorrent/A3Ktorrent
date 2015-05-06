@@ -21,8 +21,8 @@ from progress_lib import update_progress
 from blessings import Terminal
 term = Terminal()
 
-from gi.repository import Gtk, GObject
-from gi.repository import Gio
+from gi.repository import Gtk, GObject, Notify
+#from gi.repository import Gio
 
 import thread
 import getpass #for username
@@ -37,6 +37,7 @@ import scrape_test
 
 class UI(object):
     def __init__(self):
+        Notify.init("A3KTorrent")
         self.filename='path'
         self.builder = Gtk.Builder()
         self.builder.add_from_file("layout.glade")
@@ -51,6 +52,11 @@ class UI(object):
         self.search_field = self.builder.get_object("search_field")
         self.dow_label = self.builder.get_object("dow_speed")
         #self.popup_menu = self.builder.get_object("menu5")
+
+    def send_notification(self, title, text, file_path_to_icon=""):
+        #TO make bubble notification-UBUNTU#
+        n = Notify.Notification.new(title, text, file_path_to_icon)
+        n.show()
     
     def connect(self,handlers):
         self.builder.connect_signals(handlers)
@@ -59,41 +65,21 @@ class UI(object):
     def search(self,button):
         print 'search clicked'
         self.popup_menu=Gtk.Menu()
-        # i1 = Gtk.MenuItem("Leechers seeders size")
-        # self.popup_menu.append(i1)
-        # i2 = Gtk.MenuItem("Item 2")
-        # self.popup_menu.append(i2)
-        # self.popup_menu.show_all()
-        # self.popup_menu.popup(None, None, None, None, 0, Gtk.get_current_event_time())
-
-        #self.popup_menu.popup(None, None, None, None, None, 0,0)
-        #self.popup_for_device(None, parent_menu_shell, parent_menu_item, func, data, button, activate_time)
-
         s=self.search_field.get_text()
         if s:
             #thread.start_new_thread(scrape_test.main,(s,))
             pool = ThreadPool(processes=1)
             async_result = pool.apply_async(scrape_test.main, (s,)) # tuple of args for foo
-            # do some other stuff in the main process
             self.href, title, size, seeders, leechers= async_result.get() 
+            self.popup_menu.set_title("Torrents")
+            print self.popup_menu.get_title()
             for i in range(len(self.href)):
                 #print str(i+1)+'. '+title[i]+' '+size[i]+' '+seeders[i]+' '+leechers[i]
-                i1 = Gtk.MenuItem(str(i+1)+'. '+title[i]+' '+size[i]+' '+seeders[i]+' '+leechers[i])
-                i1.connect("activate",self.item_activated,i)
-                self.popup_menu.append(i1)
-                #print ' '
+                menu_item = Gtk.MenuItem(str(i+1)+'. '+title[i]+'     '+size[i]+' '+seeders[i]+'-SEEDERS '+leechers[i]+'-LEECHERS')
+                menu_item.connect("activate",self.item_activated,i)
+                self.popup_menu.append(menu_item)
             self.popup_menu.show_all()
             self.popup_menu.popup(None, None, None, None, 0, Gtk.get_current_event_time())
-            #self.popup_menu.connect('move-scroll',self.popup_clicked)
-            #sleep(5)
-
-            # MenuItemSelected = self.popup_menu.get_active() #return selected MenuItem
-
-            # label = MenuItemSelected.get_label()
-            # index = self.popup_menu.get_property("active")
-            # print label
-            # print index
-            #self.popup_menu.get
 
         else:
             print 'EMPTY'
@@ -104,11 +90,20 @@ class UI(object):
                 self.dialog.hide()
     def item_activated(self,wdg,i):
         print 'ITEM ACTIVATED:'+str(i)
-        scrape_test.download_torrent(self.href[i])
+        torrent_file_path = scrape_test.download_torrent(self.href[i])
+        print torrent_file_path
+        self.send_notification("MESSAGE","Torrent file Saved","gtk-apply")
+        #self.label.set_text("Torrent file has been downloaded!:")
+        v=self.dialog2.run()
+        if v==1:
+            self.dialog2.hide()
+            self.filename = torrent_file_path
+            button = self.builder.get_object('button2')
+            #Download-button 
+            self.download(button)
+        elif v==2:
+            self.dialog2.hide()
 
-
-    def popup_clicked(self):
-        print 'popup clicked'
 
     def download(self,button): #when download button is pressed!
         #self.progressbar.set_fraction(0.7)
@@ -180,7 +175,8 @@ class UI(object):
         self.dow_label.set_text(str(download_speed)+'Kbps')
         if percentage >= 1.0:
             #gtk_label_set_text(self.label,"TORRENT FILE 50% DOWNLOADED")
-            self.label.set_text("TORRENT FILE 100% DOWNLOADED")
+            self.label.set_text("FILE 100% DOWNLOADED")
+            self.send_notification("MESSAGE","File has been downloaded and saved to Downloads/a3k folder","gtk-apply")
             #self.dialog=self.builder.get_object('dialog1')
             v=self.dialog.run()
             if v==1:
