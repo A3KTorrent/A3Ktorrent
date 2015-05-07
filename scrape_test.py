@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import os
+import sys
 
 def download_torrent(url):
     print url

@@ -4,6 +4,7 @@
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkAboutDialog" id="aboutdialog1">
     <property name="can_focus">False</property>
+    <property name="type">popup</property>
     <property name="window_position">center</property>
     <property name="icon_name">A3K</property>
     <property name="type_hint">dialog</property>
@@ -44,7 +45,7 @@
                 <attributes>
                   <attribute name="font-desc" value="Courier 10 Pitch Bold Italic 15"/>
                   <attribute name="underline" value="True"/>
-                  <attribute name="foreground" value="#cccc00000000"/>
+                  <attribute name="foreground" value="#adad7f7fa8a8"/>
                 </attributes>
               </object>
               <packing>
@@ -60,6 +61,8 @@
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Kritesh Semwal
 Aman Dhapola
+Abhishek Singh
+Akshay Dwivedi
  
 
 </property>

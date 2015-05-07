@@ -44,10 +44,23 @@ class UI(object):
         self.builder.get_object('window1').connect('delete-event',Gtk.main_quit)
 
         self.dialog=self.builder.get_object('dialog1')
+        dialog_style = self.dialog.get_style_context()
+        dialog_style.add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+
         self.dialog2=self.builder.get_object('dialog2')
+        dialog2_style = self.dialog2.get_style_context()
+        dialog2_style.add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+        
         self.window = self.builder.get_object("window1")
+        window_style = self.window.get_style_context()
+        window_style.add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+
         self.progressbar= self.builder.get_object("progressbar1") #PROGRESSBAR
+        
         self.aboutdialog = self.builder.get_object("aboutdialog1")
+        about_style = self.aboutdialog.get_style_context()
+        about_style.add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+
         self.label = self.builder.get_object("label1")
         self.search_field = self.builder.get_object("search_field")
         self.dow_label = self.builder.get_object("dow_speed")
@@ -174,18 +187,20 @@ class UI(object):
         download_speed = round(download_speed,2)
         self.dow_label.set_text(str(download_speed)+'Kbps')
         if percentage >= 1.0:
+            self.file_downloaded()
             #gtk_label_set_text(self.label,"TORRENT FILE 50% DOWNLOADED")
-            self.label.set_text("FILE 100% DOWNLOADED")
-            self.send_notification("MESSAGE","File has been downloaded and saved to Downloads/a3k folder","gtk-apply")
-            #self.dialog=self.builder.get_object('dialog1')
-            v=self.dialog.run()
-            if v==1:
-                self.dialog.destroy()
-                Gtk.main_quit()
+    def file_downloaded(self):
+        self.label.set_text("FILE 100% DOWNLOADED")
+        self.send_notification("MESSAGE","File has been downloaded and saved to Downloads/a3k folder","gtk-apply")
+        #self.dialog=self.builder.get_object('dialog1')
+        v=self.dialog.run()
+        if v==1:
+            self.dialog.destroy()
+            Gtk.main_quit()
 
     def filechoose(self,widget):
         print 'filechoose'
-        self.filename=widget.get_filename()
+        self.filename = widget.get_filename()
         print 'FILENAME:',self.filename
 
 class ActiveTorrent(object):
