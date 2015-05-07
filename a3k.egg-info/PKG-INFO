@@ -1,0 +1,22 @@
+Metadata-Version: 1.1
+Name: a3k
+Version: 1.1.0
+Summary: A simple bittorent client written in python
+Home-page: https://github.com/A3KTorrent/A3Ktorrent
+Author: Aman Dhapola and Kritesh Semwal
+Author-email: amandhapola@gmail.com
+License: MIT
+Description: A simple bittorent client written in python
+Keywords: sample bittorent development
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4

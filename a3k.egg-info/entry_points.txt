@@ -1,0 +1,3 @@
+[console_scripts]
+a3k = src.main:main
+
