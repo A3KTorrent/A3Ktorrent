@@ -17,17 +17,14 @@ import sys
 from random import randrange
 import socket
 import urllib, urllib2
-from progress_lib import update_progress
 from blessings import Terminal
 term = Terminal()
 
 from gi.repository import Gtk, GObject, Notify
 #from gi.repository import Gio
-
 import thread
 import getpass #for username
-from multiprocessing.pool import ThreadPool
-import scrape   
+from multiprocessing.pool import ThreadPool 
 #sys.path.append(path.abspath("scraping"))
 import scrape_test
 
@@ -44,25 +41,24 @@ class UI(object):
         self.builder.get_object('window1').connect('delete-event',Gtk.main_quit)
 
         self.dialog=self.builder.get_object('dialog1')
-        dialog_style = self.dialog.get_style_context()
-        dialog_style.add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+        self.dialog.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
 
         self.dialog2=self.builder.get_object('dialog2')
-        dialog2_style = self.dialog2.get_style_context()
-        dialog2_style.add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+        self.dialog2.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
         
         self.window = self.builder.get_object("window1")
-        window_style = self.window.get_style_context()
-        window_style.add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+        self.window.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
 
         self.progressbar= self.builder.get_object("progressbar1") #PROGRESSBAR
+        self.progressbar.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
         
         self.aboutdialog = self.builder.get_object("aboutdialog1")
-        about_style = self.aboutdialog.get_style_context()
-        about_style.add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+        self.aboutdialog.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
 
         self.label = self.builder.get_object("label1")
+
         self.search_field = self.builder.get_object("search_field")
+        self.search_field.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
         self.dow_label = self.builder.get_object("dow_speed")
         #self.popup_menu = self.builder.get_object("menu5")
 
@@ -103,7 +99,10 @@ class UI(object):
                 self.dialog.hide()
     def item_activated(self,wdg,i):
         print 'ITEM ACTIVATED:'+str(i)
-        torrent_file_path = scrape_test.download_torrent(self.href[i])
+        pool = ThreadPool(processes=1)
+        async_result = pool.apply_async(scrape_test.download_torrent, (self.href[i],)) # tuple of args for foo
+        torrent_file_path = async_result.get()
+        #torrent_file_path = scrape_test.download_torrent(self.href[i])
         print torrent_file_path
         self.send_notification("MESSAGE","Torrent file Saved","gtk-apply")
         #self.label.set_text("Torrent file has been downloaded!:")
