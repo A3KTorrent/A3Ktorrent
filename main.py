@@ -23,7 +23,7 @@ term = Terminal()
 from gi.repository import Gtk, GObject, Notify
 #from gi.repository import Gio
 import thread
-import getpass #for username
+#import getpass #for username
 from multiprocessing.pool import ThreadPool 
 #sys.path.append(path.abspath("scraping"))
 import scrape_test
@@ -35,7 +35,9 @@ import scrape_test
 class UI(object):
     def __init__(self):
         Notify.init("A3KTorrent")
-        self.filename='path'
+        self.filename = 'path'
+        self.filepath = 'folder'
+        #default values to check!
         self.builder = Gtk.Builder()
         self.builder.add_from_file("layout.glade")
         self.builder.get_object('window1').connect('delete-event',Gtk.main_quit)
@@ -45,6 +47,9 @@ class UI(object):
 
         self.dialog2=self.builder.get_object('dialog2')
         self.dialog2.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+
+        self.dialog3 = self.builder.get_object("dialog3")
+        self.dialog3.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
         
         self.window = self.builder.get_object("window1")
         self.window.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
@@ -56,6 +61,9 @@ class UI(object):
         self.aboutdialog.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
 
         self.label = self.builder.get_object("label1")
+
+        self.builder.get_object("filechooserbutton2").set_action(Gtk.FileChooserAction.SELECT_FOLDER)
+        #filechooser 2
 
         self.search_field = self.builder.get_object("search_field")
         self.search_field.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
@@ -137,22 +145,45 @@ class UI(object):
             self.dialog.hide()
         else:
             print 'else'
-            button.set_sensitive(False) # so that user can not press download button again!
+            #button.set_sensitive(False) # so that user can not press download button again!
             
             
             # for i in range(1,len(sys.argv)):
             #    torrent_list=torrent_list.append(sys.argv[i])
             #torrent_list.append(sys.argv[1])
-
-            thread.start_new_thread(self.start_download,())
+            while True:
+                v=self.dialog3.run()
+                if v==1:
+                    #PROCEED BUTTON HAS BEEN CLICKED!
+                    print self.filepath
+                    if self.filepath == 'folder':
+                        v==10
+                        self.label.set_text("Please Select a Path to Download")
+                        response=self.dialog.run()
+                        print response
+                        if response == 1:
+                            print 'The OK button was clicked'
+                            self.dialog.hide()
+                    else:
+                        self.dialog3.hide()
+                        thread.start_new_thread(self.start_download,())
+                        button.set_sensitive(False)
+                        break
+                if v == 2:
+                    #cancel
+                    self.dialog3.hide()
+                    break
+    
             #p=multiprocessing.Process(target=self.start_download)
             #p.start()
             
 
     def start_download(self):
         # change this for changing writing directory
-        username=getpass.getuser()
-        writing_dir='/home/'+username+'/Downloads/a3k'
+        #username=getpass.getuser()
+       # writing_dir='/home/'+username+'/Downloads/a3k'
+
+        writing_dir = self.filepath
         ###############################################
         print writing_dir
         torrent_list=[]
@@ -201,6 +232,12 @@ class UI(object):
         print 'filechoose'
         self.filename = widget.get_filename()
         print 'FILENAME:',self.filename
+
+    def filechoose2(self,widget):
+        print 'filechoose2'
+        self.filepath = widget.get_filename()
+        print 'FILENAME2:',self.filepath
+
 
 class ActiveTorrent(object):
     def __init__(self,ui, torrent_file, writing_dir):
@@ -310,6 +347,8 @@ class ActiveTorrent(object):
     def udp_connection_request(self):
         self.clisocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.clisocket.connect((self.track_url,int(self.track_port)))
+        #self.clisocket.settimeout(10)
+        #self.clisocket.setblocking(0)#unblock
         #print 'oye udp'
         connection_id = 0x41727101980
         transaction_id = randrange(1, 65535)              # transaction id is a random number
@@ -322,7 +361,9 @@ class ActiveTorrent(object):
         #self.clisocket.sendto(packet, (self.track_url, int(self.track_port)))
         self.clisocket.send(buf)
 
+       
         res = self.clisocket.recv(16)
+        print res
         print 'NOW RECv'
         parsed_res = unpack(">LLQ", res)
 
@@ -573,6 +614,7 @@ def main():
         "onDeleteWindow":Gtk.main_quit,
         "onDownloadButtonPressed":ui.download,
         "on_filechooserbutton1_file_set":ui.filechoose,
+        "filechooserbutton2_file_set":ui.filechoose2,
         "search_clicked":ui.search
     }
     ui.connect(handlers)

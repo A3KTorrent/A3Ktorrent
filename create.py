@@ -15,3 +15,7 @@ def create_torrent(file_path,file_name):
 	f = open(file_name, "wb")
 	f.write(lt.bencode(torrent))
 	f.close()
+def main():
+	
+if __name__ == '__main__':
+	main()
