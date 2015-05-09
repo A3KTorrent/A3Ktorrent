@@ -12,8 +12,10 @@ class torrent(object):
 		#getting params
 		self.metainfo=metainfo
 		self.announce_url=self.metainfo['announce']
-		# if self.metainfo['announce-list']:
-		# 	self.announce_list=self.metainfo['announce-list']
+		if self.metainfo['announce-list']:
+			self.announce_list=self.metainfo['announce-list']
+			print self.announce_list
+		self.announce_url = self.announce_list[2][0]
 		self.info=self.metainfo['info']
 		self.sha_info=hashlib.sha1(bencode.bencode(self.info))
 		self.info_hash=self.sha_info.digest()                  #returns the result of sha1 encodeing
